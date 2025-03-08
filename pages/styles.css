@@ -1,0 +1,84 @@
+/* styles.css */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1a1a1a;
+  color: white;
+  text-align: center;
+}
+
+.container {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.wallet-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.claim-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.clock {
+  font-size: 1.5rem;
+  margin: 15px 0;
+}
+
+.button-group {
+  margin: 20px 0;
+}
+
+.select-all, .deselect-all {
+  background-color: green;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+.deselect-all {
+  background-color: red;
+}
+
+.staking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.staking-table th, .staking-table td {
+  border: 1px solid white;
+  padding: 12px;
+  text-align: center;
+}
+
+.staking-table th {
+  background-color: #333;
+}
+
+.staking-table tr:nth-child(even) {
+  background-color: #444;
+}
+
+.staking-table tr:hover {
+  background-color: #555;
+}
