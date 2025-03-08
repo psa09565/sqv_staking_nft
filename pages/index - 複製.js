@@ -105,71 +105,49 @@ export default function StakingNFT() {
     }
   };
 
-const fetchStakedNFTs = async (wallet) => {
-  if (!provider) {
-    console.error("❌ Provider 未初始化，請先連接錢包");
-    return;
-  }
-
-  const contract = new ethers.Contract(stakingContractAddress, stakingAbi, provider);
-  const contract2 = new ethers.Contract(claimContractAddress, claimAbi, provider);
-
-  if (!contract || !contract2) {
-    console.error("❌ 無法創建合約實例，請檢查合約地址或 ABI");
-    return;
-  }
-
-  try {
-    console.log("🔍 獲取質押 NFT...");
-    const data = await contract.getStakedNFTs(wallet);
-    console.log("✅ 合約回傳 `data`:", data);
-
-    if (!data || data.length === 0) {
-      console.warn("⚠️ 無質押 NFT");
+  const fetchStakedNFTs = async (wallet) => {
+    if (!provider) {
+      console.error("❌ Provider 未初始化，請先連接錢包");
       return;
     }
 
-    const now = Math.floor(Date.now() / 1000);
+    const contract = new ethers.Contract(stakingContractAddress, stakingAbi, provider);
+	const contract2 = new ethers.Contract(claimContractAddress, claimAbi, provider);
+    if (!contract) {
+      console.error("❌ 無法創建合約實例，請檢查合約地址或 ABI");
+      return;
+    }
+	
+    if (!contract2) {
+      console.error("❌ 無法創建合約實例，請檢查合約地址或 ABI");
+      return;
+    }
 
-    // **並行查詢每個 NFT 的等級**
-    const formattedData = await Promise.all(data.map(async (nft) => {
-      const nftId = parseInt(nft.nftId.toString(), 10);
+    try {
+      console.log("🔍 獲取質押 NFT...");
+      const data = await contract.getStakedNFTs(wallet);
+	  console.log("✅ 合約回傳 `data`:", data);
 
-      // 呼叫合約 `calSeedLevel` 查詢等級
-      let levelText = "未知";
-      try {
-        const level = await contract2.calSeedLevel(nftId);
-		console.log("✅ 合約回傳 `level`:", level);
-        
-        // **對應等級數值轉成文字**
-        const levelMapping = {
-          5: "傳奇",
-          4: "史詩",
-          3: "稀有",
-          2: "非凡",
-          1: "普通"
-        };
-        levelText = levelMapping[level] || "未知";
-      } catch (err) {
-        console.error(`⚠️ 無法獲取 NFT 等級 (ID: ${nftId})`, err);
+      if (!data || data.length === 0) {
+        console.warn("⚠️ 無質押 NFT");
+        return;
       }
 
-      return {
-        id: `QCP${nftId}`,
-        level: levelText, // 插入等級資訊
+      const now = Math.floor(Date.now() / 1000);
+      const formattedData = data.map(nft => ({
+        id: `QCP${parseInt(nft.nftId.toString(), 10)}`,
         stakeTime: nft.stakeTime.toNumber() ? new Date(nft.stakeTime.toNumber() * 1000).toLocaleString() : "未設定",
         lastRewardTime: nft.defaultRewardStartTime.toNumber() ? new Date(nft.defaultRewardStartTime.toNumber() * 1000).toLocaleString() : "未設定",
         canClaim: now - nft.defaultRewardStartTime.toNumber() >= 86400
-      };
-    }));
+      }));
+	  
 
-    console.log("✅ 處理後 NFT 資料:", formattedData);
-    setNfts(formattedData);
-  } catch (error) {
-    console.error("❌ 獲取 NFT 失敗:", error);
-  }
-};
-
+      console.log("✅ 處理後 NFT 資料:", formattedData);
+      setNfts(formattedData);
+    } catch (error) {
+      console.error("❌ 獲取 NFT 失敗:", error);
+    }
+  };
 
   const claimRewards = async () => {
     if (!provider || selectedNFTs.length === 0) return;
@@ -215,34 +193,30 @@ const fetchStakedNFTs = async (wallet) => {
         <button className="deselect-all" onClick={handleDeselectAll}>取消全選</button>
         <button className="claim-btn" onClick={claimRewards} disabled={selectedNFTs.length === 0}>領取獎勵</button>
       </div>
- <table className="staking-table">
-  <thead>
-    <tr>
-      <th>選取</th>
-      <th>NFT 名稱</th>
-      <th>NFT 等級</th>  {/* ✅ 新增等級欄位 */}
-      <th>質押時間</th>
-      <th>上次領取時間</th>
-    </tr>
-  </thead>
-  <tbody>
-    {nfts.map(nft => (
-      <tr key={nft.id}>
-        <td>
-          <input type="checkbox" disabled={!nft.canClaim} checked={selectedNFTs.includes(nft.id)}
-            onChange={() => setSelectedNFTs(selectedNFTs.includes(nft.id)
-              ? selectedNFTs.filter(id => id !== nft.id)
-              : [...selectedNFTs, nft.id])} />
-        </td>
-        <td>{nft.id}</td>
-        <td>{nft.level}</td>  {/* ✅ 顯示 NFT 等級 */}
-        <td>{nft.stakeTime}</td>
-        <td>{nft.lastRewardTime}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+      <table className="staking-table">
+        <thead>
+          <tr>
+            <th>選取</th>
+            <th>NFT 名稱</th>
+            <th>質押時間</th>
+            <th>上次領取時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          {nfts.map(nft => (
+            <tr key={nft.id}>
+              <td><input type="checkbox" disabled={!nft.canClaim} checked={selectedNFTs.includes(nft.id)}
+                onChange={() => setSelectedNFTs(selectedNFTs.includes(nft.id)
+                  ? selectedNFTs.filter(id => id !== nft.id)
+                  : [...selectedNFTs, nft.id])} />
+              </td>
+              <td>{nft.id}</td>
+              <td>{nft.stakeTime}</td>
+              <td>{nft.lastRewardTime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
