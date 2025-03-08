@@ -6,17 +6,17 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 2. 打開cmd 輸入指令
 
-npx create-next-app@latest sqv-staking-nft
+	npx create-next-app@latest sqv-staking-nft
 
-npm install ethers @walletconnect/web3-provider web3modal date-fns
+	npm install ethers @walletconnect/web3-provider web3modal date-fns
 
-cd sqv-staking-nft
+	cd sqv-staking-nft
+	
+	cd pages
 
-cd pages
+	npm install react react-dom ethers date-fns web3modal @walletconnect/web3-provider
 
-npm install react react-dom ethers date-fns web3modal @walletconnect/web3-provider
-
-npm run dev
+	npm run dev
 
 
 ## 免責聲明
